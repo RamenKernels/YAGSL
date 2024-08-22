@@ -1,0 +1,11 @@
+{
+    "conversionFactor": {
+        "drive": 0.148148148148,
+        "angle": 28.125
+      },
+    "currentLimit": {
+      "drive": 50,
+      "angle": 20
+    },
+    "optimalVoltage": 12
+}       
