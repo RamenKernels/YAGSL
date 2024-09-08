@@ -2,6 +2,7 @@ package frc.robot.subsystems;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -24,7 +25,7 @@ public class SwerveSubsystem extends SubsystemBase{
 
     File swerveJsonDirectory = new File(Filesystem.getDeployDirectory(), "swerve");
 
-    public SwerveSubsystem(File directory) {
+    public SwerveSubsystem() {
         try {
             swerveDrive = new SwerveParser(swerveJsonDirectory).createSwerveDrive(SwerveConstants.MAX_SPEED);
         } catch (IOException e) {
@@ -36,53 +37,33 @@ public class SwerveSubsystem extends SubsystemBase{
 
         SmartDashboard.putData("Field", field);
     }
-    
-    /**
-   * Command to drive the robot using translative values and heading as a setpoint.
-   *
-   * @param translationX Translation in the X direction.
-   * @param translationY Translation in the Y direction.
-   * @param headingX     Heading X to calculate angle of the joystick.
-   * @param headingY     Heading Y to calculate angle of the joystick.
-   * @return Drive command.
-   */
-  public Command driveCommand(DoubleSupplier translationX, DoubleSupplier translationY, DoubleSupplier headingX,
-                              DoubleSupplier headingY)
-  {
-    return run(() -> {
-      double xInput = Math.pow(translationX.getAsDouble(), 3); // Smooth controll out
-      double yInput = Math.pow(translationY.getAsDouble(), 3); // Smooth controll out
-      // Make the robot move
-      swerveDrive.driveFieldOriented(swerveDrive.swerveController.getTargetSpeeds(xInput, yInput,
-                                                                      headingX.getAsDouble(),
-                                                                      headingY.getAsDouble(),
-                                                                      swerveDrive.getYaw().getRadians(),
-                                                                      swerveDrive.getMaximumVelocity()));
-    });
-  }
 
-  /**
-   * Command to drive the robot using translative values and heading as angular velocity.
-   *
-   * @param translationX     Translation in the X direction.
-   * @param translationY     Translation in the Y direction.
-   * @param angularRotationX Rotation of the robot to set
-   * @return Drive command.
-   */
-  public Command driveCommand(DoubleSupplier translationX, DoubleSupplier translationY, DoubleSupplier angularRotationX)
-  {
-    return run(() -> {
-      // Make the robot move
-      swerveDrive.drive(new Translation2d(translationX.getAsDouble() * swerveDrive.getMaximumVelocity(),
-                                          translationY.getAsDouble() * swerveDrive.getMaximumVelocity()),
-                        angularRotationX.getAsDouble() * swerveDrive.getMaximumAngularVelocity(),
-                        true,
-                        false);
-    });
-  }
+      /**
+     * Command to drive the robot using translative values and heading as angular velocity.
+     *
+     * @param translationX     Translation in the X direction. Cubed for smoother controls.
+     * @param translationY     Translation in the Y direction. Cubed for smoother controls.
+     * @param angularRotationX Angular velocity of the robot to set. Cubed for smoother controls.
+     * @return Drive command.
+     */
+    public Command driveCommand(DoubleSupplier translationX, DoubleSupplier translationY, DoubleSupplier angularRotationX)
+    {
+      return run(() -> {
+        // Make the robot move
+        swerveDrive.drive(SwerveMath.scaleTranslation(new Translation2d(
+                              translationX.getAsDouble() * swerveDrive.getMaximumVelocity(),
+                              translationY.getAsDouble() * swerveDrive.getMaximumVelocity()), 0.8),
+                          Math.pow(angularRotationX.getAsDouble(), 3) * swerveDrive.getMaximumAngularVelocity(),
+                          true,
+                          false);
+      });
+    }
 
     @Override
     public void simulationPeriodic() {
         field.setRobotPose(swerveDrive.getPose());
+
+      SmartDashboard.putNumber("Pose X: ", swerveDrive.getPose().getX());
+      SmartDashboard.putNumber("Pose Y: ", swerveDrive.getPose().getY());
     }  
 }

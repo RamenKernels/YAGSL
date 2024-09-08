@@ -20,7 +20,7 @@ import frc.robot.subsystems.SwerveSubsystem;
  */
 public class RobotContainer {
 
-  private SwerveSubsystem swerveSubsystem = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(), "swerve"));
+  private SwerveSubsystem swerveSubsystem = new SwerveSubsystem();
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final CommandXboxController m_driverController =
@@ -42,10 +42,13 @@ public class RobotContainer {
    * joysticks}.
    */
   private void configureBindings() {
+
+    Trigger startButton = new Trigger(m_driverController.start());
+
     swerveSubsystem.setDefaultCommand(swerveSubsystem.driveCommand(
-      () -> m_driverController.getLeftX(), 
-      () -> m_driverController.getLeftY(), 
-      () -> m_driverController.getRightX()
+      () -> -m_driverController.getLeftY(), 
+      () -> -m_driverController.getLeftX(), 
+      () -> -m_driverController.getRightTriggerAxis()
       ));
   }
 
