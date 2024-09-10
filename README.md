@@ -1,6 +1,6 @@
 # YAGSL Test
 
-This is a YAGSL test for use in next year's frc season. (Go PHRED!)
+This is a YAGSL test for possible use in next year's frc season. (Go PHRED!)
 
 ## Dependency installation
 First, install Wpilib - https://docs.wpilib.org/en/stable/docs/zero-to-robot/step-2/wpilib-setup.html
@@ -13,3 +13,5 @@ After that, select "Install new libraries (online)" and paste in the following l
 - https://frcsdk.reduxrobotics.com/ReduxLib_2024.json
 - https://3015rangerrobotics.github.io/pathplannerlib/PathplannerLib.json
 - https://broncbotz3481.github.io/YAGSL-Lib/yagsl/yagsl.json
+
+Will add advantagescope robot model for simulation
